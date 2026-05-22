@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0B0B1E" />
+  <title>نيلة ستور - متجر الشحن الرقمي</title>
+  <meta name="description" content="نيلة ستور - أفضل متجر شحن ألعاب وخدمات رقمية في السودان" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./src/style.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-box">
+      <div class="spinner-ring"></div>
+      <div class="spinner-logo">N</div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <button class="sidebar-close-btn" onclick="closeSidebar()">✕</button>
+      <div class="sidebar-user-area" id="sidebar-user-area">
+        <div class="s-avatar" id="s-avatar">N</div>
+        <div>
+          <div class="s-name" id="s-name">أهلاً بيك</div>
+          <div class="s-balance" id="s-balance" style="display:none">💰 <span id="s-balance-val">0</span> SDG</div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-body">
+      <a class="s-link" onclick="navigate('home')"><i>🏠</i>الصفحة الرئيسية</a>
+      <div class="s-label">الأقسام</div>
+      <a class="s-link" onclick="navigate('sections')"><i>📦</i>كل الأقسام</a>
+      <a class="s-link" onclick="navigate('products',{section:'games'})"><i>🎮</i>شحن الألعاب</a>
+      <a class="s-link" onclick="navigate('products',{section:'social'})"><i>📱</i>شحن تطبيقات التواصل</a>
+      <a class="s-link" onclick="navigate('products',{section:'ai'})"><i>🤖</i>اشتراكات الذكاء الاصطناعي</a>
+      <a class="s-link" onclick="navigate('products',{section:'cards'})"><i>💳</i>البطاقات الرقمية</a>
+      <a class="s-link" onclick="navigate('products',{section:'recharge'})"><i>📞</i>شحن الرصيد</a>
+      <a class="s-link" onclick="navigate('products',{section:'electricity'})"><i>⚡</i>شراء الكهرباء</a>
+      <a class="s-link" onclick="navigate('products',{section:'entertainment'})"><i>🎬</i>الاشتراكات الترفيهية</a>
+      <a class="s-link" onclick="navigate('products',{section:'internet'})"><i>🌐</i>اشتراكات الإنترنت</a>
+      <div class="s-label">حسابي</div>
+      <a class="s-link auth-required" onclick="navigate('profile')"><i>👤</i>حسابي</a>
+      <a class="s-link auth-required" onclick="navigate('wallet')"><i>💰</i>المحفظة</a>
+      <a class="s-link auth-required" onclick="navigate('orders')"><i>📋</i>طلباتي</a>
+      <a class="s-link auth-required" onclick="navigate('notifications')"><i>🔔</i>الإشعارات <span class="notif-pill" id="notif-pill" style="display:none">0</span></a>
+      <div class="s-label">معلومات</div>
+      <a class="s-link" onclick="navigate('support')"><i>🎧</i>الدعم الفني</a>
+      <a class="s-link" onclick="navigate('faq')"><i>❓</i>الأسئلة الشائعة</a>
+      <a class="s-link" onclick="navigate('about')"><i>ℹ️</i>عن المتجر</a>
+      <a class="s-link" onclick="navigate('privacy')"><i>🔒</i>سياسة الخصوصية</a>
+      <a class="s-link" onclick="navigate('terms')"><i>📜</i>شروط الاستخدام</a>
+      <div class="s-label" id="s-admin-label" style="display:none">الإدارة</div>
+      <a class="s-link s-admin-link" id="s-admin-link" style="display:none" onclick="navigate('admin')"><i>⚙️</i>لوحة الإدارة</a>
+      <div class="s-divider"></div>
+      <a class="s-link s-auth-btn" id="s-auth-btn" onclick="handleSidebarAuth()"><i id="s-auth-icon">🔑</i><span id="s-auth-text">تسجيل الدخول</span></a>
+    </div>
+  </nav>
+
+  <header class="app-header">
+    <button class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+    <div class="header-brand" onclick="navigate('home')">
+      <div class="brand-icon">N</div>
+      <span class="brand-name">نيلة ستور</span>
+    </div>
+    <div class="header-right">
+      <button class="h-btn" id="h-notif-btn" onclick="navigate('notifications')" style="display:none">🔔<span class="h-badge" id="h-notif-badge" style="display:none">0</span></button>
+      <button class="h-btn" onclick="navigate('cart')">🛒<span class="h-badge" id="h-cart-badge" style="display:none">0</span></button>
+      <div class="h-wallet-chip" id="h-wallet-chip" onclick="navigate('wallet')" style="display:none"><span id="h-balance">0</span> SDG</div>
+    </div>
+  </header>
+
+  <main class="main-content" id="main-content">
+    <div id="page-container"></div>
+  </main>
+
+  <div class="modal-bg" id="modal-confirm" style="display:none">
+    <div class="modal-card">
+      <div class="modal-emoji" id="modal-emoji">⚠️</div>
+      <h3 id="modal-title">تأكيد</h3>
+      <p id="modal-msg"></p>
+      <div class="modal-btns">
+        <button class="btn btn-danger" id="modal-yes-btn">تأكيد</button>
+        <button class="btn btn-ghost" onclick="closeModal()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <a href="/download.html" style="position:fixed;bottom:80px;left:16px;z-index:9999;background:linear-gradient(135deg,#F59E0B,#E88000);color:#fff;font-family:'Cairo',sans-serif;font-weight:900;font-size:13px;padding:10px 16px;border-radius:50px;text-decoration:none;box-shadow:0 4px 20px rgba(245,158,11,0.5);display:flex;align-items:center;gap:6px">⬇️ تنزيل الكود</a>
+
+  <script src="./src/app.js"></script>
+<script src="https://replit-cdn.com/replit-pill/replit-pill.global.js" data-repl-id="5f482729-2588-4ad5-9895-0a5068b3a27f"></script></body>
+</html>
